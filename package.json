@@ -5,12 +5,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tsparticles/react": "^3.0.0",
     "chart.js": "^4.x",
     "papaparse": "^5.x",
     "react": "^18.x",
     "react-chartjs-2": "^5.x",
     "react-dom": "^18.x",
-    "react-router-dom": "^7.1.5"
+    "react-router-dom": "^7.1.5",
+    "tsparticles": "^3.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.x",

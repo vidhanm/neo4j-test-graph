@@ -5,6 +5,85 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #121212;
+  background-color: #000000;
   color: white;
+}
+
+@keyframes moveFigure {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  5% {
+    transform: translate(-70%, -70%);
+  }
+  10% {
+    transform: translate(-80%, -80%);
+  }
+  15% {
+    transform: translate(0%, -85%);
+  }
+  20% {
+    transform: translate(80%, -80%);
+  }
+  25% {
+    transform: translate(85%, -40%);
+  }
+  30% {
+    transform: translate(80%, 0%);
+  }
+  35% {
+    transform: translate(85%, 40%);
+  }
+  40% {
+    transform: translate(-80%, 80%);
+  }
+  45% {
+    transform: translate(0%, 85%);
+  }
+  50% {
+    transform: translate(80%, 80%);
+  }
+  55% {
+    transform: translate(-85%, 40%);
+  }
+  60% {
+    transform: translate(-80%, 0%);
+  }
+  65% {
+    transform: translate(-85%, -40%);
+  }
+  70% {
+    transform: translate(0%, -80%);
+  }
+  75% {
+    transform: translate(40%, -85%);
+  }
+  80% {
+    transform: translate(0%, 80%);
+  }
+  85% {
+    transform: translate(-40%, 85%);
+  }
+  90% {
+    transform: translate(-80%, -30%);
+  }
+  95% {
+    transform: translate(-70%, -40%);
+  }
+  100% {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Add this new animation for the grid cells */
+@keyframes gridPulse {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.1;
+  }
 } 
