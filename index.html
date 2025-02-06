@@ -1,57 +1,22 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>3D Force Graph Demo</title>
-    <style>
-        body { margin: 0; }
-        #3d-graph { width: 100vw; height: 100vh; }
-        #loading { 
-            position: fixed; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-    </style>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArXiv Papers Analysis</title>
+    <meta name="description" content="Analyze research papers using Neo4j graph visualization and trends analysis" />
     
-    <!-- Dependencies -->
-    <script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
-    <script src="https://unpkg.com/three-spritetext@1.6.5/dist/three-spritetext.min.js"></script>
-    <script src="https://unpkg.com/3d-force-graph@1.70.10/dist/3d-force-graph.min.js"></script>
-</head>
-<body>
-    <div id="3d-graph"></div>
-    <div id="loading">Loading graph data...</div>
-
-    <script>
-        // Initialize the graph
-        const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
-            .nodeAutoColorBy('label')
-            .nodeLabel(node => `${node.label}: ${node.caption}`)
-            .onNodeHover(node => document.getElementById('3d-graph').style.cursor = node ? 'pointer' : null);
-
-        // Show loading indicator
-        const loading = document.getElementById('loading');
-        
-        // Function to load data
-        async function loadGraphData() {
-            loading.style.display = 'block';
-            try {
-                const response = await fetch('arxiv_papers_sample.json');
-                const data = await response.json();
-                Graph.graphData(data);
-            } catch (error) {
-                console.error('Error loading the graph data:', error);
-            } finally {
-                loading.style.display = 'none';
-            }
-        }
-
-        loadGraphData();
-    </script>
-</body>
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html> 

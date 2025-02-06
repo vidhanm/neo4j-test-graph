@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ArXiv Papers Analysis</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        #graph-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        select {
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .zoom-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .zoom-button {
+            background-color: #2196F3;
+        }
+        .zoom-button:hover {
+            background-color: #1976D2;
+        }
+        .reset-button {
+            background-color: #f44336;
+        }
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div>
+            <select id="viewMode">
+                <option value="main">Main Categories</option>
+                <option value="sub">Subcategories</option>
+            </select>
+            <select id="mainCategory">
+                <option value="all">All Categories</option>
+            </select>
+            <button onclick="updateVisualization()">Update View</button>
+        </div>
+        <div class="zoom-controls">
+            <button class="zoom-button" onclick="enableAxisZoom('x')">Enable X-Axis Zoom</button>
+            <button class="zoom-button" onclick="enableAxisZoom('y')">Enable Y-Axis Zoom</button>
+            <button class="zoom-button" onclick="enableAxisZoom('xy')">Enable Both Axes Zoom</button>
+            <button class="reset-button" onclick="resetZoom()">Reset Zoom</button>
+        </div>
+    </div>
+    <div id="graph-container">
+        <div id="plotly-graph"></div>
+    </div>
+
+    <script>
+        let visualizationData = null;
+        let currentMode = 'main';
+        let selectedMainCategory = 'all';
+        let myPlot = document.getElementById('plotly-graph');
+
+        // Color palette for the visualization
+        const colorPalette = [
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
+            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+            '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+            '#5254a3', '#8ca252', '#bd9e39', '#ad494a', '#a55194',
+            '#6b6ecf', '#b5cf6b', '#e7ba52', '#d6616b', '#ce6dbd',
+            '#9c9ede', '#cedb9c', '#e7cb94', '#e7969c', '#de9ed6'
+        ];
+
+        // Fetch and load the data
+        fetch('visualization_data.json')
+            .then(response => response.json())
+            .then(data => {
+                visualizationData = data;
+                populateMainCategories();
+                updateVisualization();
+            });
+
+        function populateMainCategories() {
+            const select = document.getElementById('mainCategory');
+            Object.keys(visualizationData.categories).forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                select.appendChild(option);
+            });
+        }
+
+        function enableAxisZoom(axis) {
+            const update = {
+                dragmode: axis === 'xy' ? 'zoom' : axis + 'zoom'
+            };
+            Plotly.relayout(myPlot, update);
+        }
+
+        function resetZoom() {
+            Plotly.relayout(myPlot, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        }
+
+        function updateVisualization() {
+            currentMode = document.getElementById('viewMode').value;
+            selectedMainCategory = document.getElementById('mainCategory').value;
+            
+            const traces = [];
+            const years = visualizationData.years;
+
+            if (currentMode === 'main') {
+                // Show main categories
+                Object.entries(visualizationData.categories).forEach(([category, data], index) => {
+                    if (selectedMainCategory === 'all' || selectedMainCategory === category) {
+                        const yearlyData = years.map(year => data.total_by_year[year] || 0);
+                        traces.push({
+                            x: years,
+                            y: yearlyData,
+                            name: category,
+                            type: 'scatter',
+                            mode: 'lines+markers',
+                            line: {
+                                color: colorPalette[index % colorPalette.length],
+                                width: 2
+                            },
+                            marker: {
+                                size: 6,
+                                color: colorPalette[index % colorPalette.length]
+                            }
+                        });
+                    }
+                });
+            } else {
+                // Show subcategories for selected main category
+                const categoryData = visualizationData.categories[selectedMainCategory];
+                if (categoryData) {
+                    Object.entries(categoryData.subcategories).forEach(([subcat, yearData], index) => {
+                        const yearlyData = years.map(year => yearData[year] || 0);
+                        traces.push({
+                            x: years,
+                            y: yearlyData,
+                            name: subcat,
+                            type: 'scatter',
+                            mode: 'lines+markers',
+                            line: {
+                                color: colorPalette[index % colorPalette.length],
+                                width: 2
+                            },
+                            marker: {
+                                size: 6,
+                                color: colorPalette[index % colorPalette.length]
+                            }
+                        });
+                    });
+                }
+            }
+
+            const layout = {
+                title: 'Research Papers by Category Over Time',
+                xaxis: {
+                    title: 'Year',
+                    tickmode: 'linear',
+                    gridcolor: '#E1E1E1',
+                    zerolinecolor: '#969696'
+                },
+                yaxis: {
+                    title: 'Number of Papers',
+                    gridcolor: '#E1E1E1',
+                    zerolinecolor: '#969696'
+                },
+                paper_bgcolor: 'white',
+                plot_bgcolor: 'white',
+                hovermode: 'closest',
+                showlegend: true,
+                legend: {
+                    x: 1.05,
+                    xanchor: 'left',
+                    y: 1,
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                    bordercolor: '#E1E1E1',
+                    borderwidth: 1
+                },
+                margin: {
+                    r: 200  // Add right margin for legend
+                }
+            };
+
+            const config = {
+                responsive: true,
+                scrollZoom: true,
+                displayModeBar: true,
+                modeBarButtonsToAdd: ['select2d', 'lasso2d'],
+                modeBarButtonsToRemove: ['autoScale2d']
+            };
+
+            Plotly.newPlot('plotly-graph', traces, layout, config);
+        }
+    </script>
+</body>
+</html> 
