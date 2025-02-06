@@ -32,8 +32,8 @@ const LandingPage = () => {
           Math.pow(cellCenter.y - figureCenter.y, 2)
         );
 
-        if (distance < 200) {
-          const intensity = Math.pow(1 - (distance / 200), 1.5);
+        if (distance < 400) {
+          const intensity = Math.pow(1 - (distance / 400), 1.5);
           const r = Math.round(255 * intensity);
           const g = Math.round(69 * intensity);
           const b = 0;
@@ -125,17 +125,18 @@ const LandingPage = () => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '300px',
-          height: '300px',
+          width: '1200px',
+          height: '600px',
           background: `
-            radial-gradient(circle at center, 
+            radial-gradient(ellipse at center, 
               rgba(255, 69, 0, 0.4) 0%,
               rgba(255, 69, 0, 0.2) 40%,
               transparent 70%
             )
           `,
-          animation: 'moveFigure 90s linear infinite',
-          zIndex: 1
+          animation: 'moveFigure 20s linear infinite',
+          zIndex: 1,
+          borderRadius: '300px'
         }}
       />
 
